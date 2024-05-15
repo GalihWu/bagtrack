@@ -1,0 +1,49 @@
+.right-booknow {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.bottom-right-booknow {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 20px;
+  width: 540px;
+  height: 300px;
+}
+
+.quantity {
+  display: flex;
+  width: 200px;
+  height: 50px;
+  gap: 10px;
+  border: 1px solid;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px;
+}
+
+.setquantity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  border: 1px solid;
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  transition: font-size 1s ease;
+}
+
+.setquantity:active {
+  font-size: 30px;
+}
+
+.indent {
+  text-indent: 30px; /* Majukan awal paragraf 20px */
+  text-align: justify;
+}

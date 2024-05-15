@@ -1,0 +1,57 @@
+.auth {
+  background-color: #f0f0f0;
+}
+
+.box {
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 10px 10px 20px -0px rgba(0, 0, 0, 0.1);
+}
+
+.link {
+  font-weight: bold;
+  color: #4d424d !important;
+}
+
+/* .button5 {
+  align-items: center;
+  background-color: #4d424d;
+  border: 1px solid transparent;
+  border-radius: 8px !important;
+  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: system-ui, -apple-system, system-ui, 'Helvetica Neue', Helvetica,
+    Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  justify-content: center;
+  line-height: 1.25;
+  margin: 0;
+  min-height: 3rem;
+  padding: calc(0.875rem - 1px) calc(1.5rem - 1px);
+  position: relative;
+  text-decoration: none;
+  transition: all 250ms;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  width: auto;
+}
+
+.button5:hover,
+.button5:focus {
+  background-color: #312a31;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+}
+
+.button5:hover {
+  transform: translateY(-1px);
+}
+
+.button5:active {
+  background-color: #2a232a;
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  transform: translateY(0);
+} */

@@ -1,0 +1,21 @@
+.parent {
+  height: 125px;
+  background-color: #f0f0f0;
+  color: #7f7e90;
+  padding-top: 35px;
+}
+
+.footer-body {
+  display: flex;
+  margin: 0 35px;
+  padding: 15px 0 0 0;
+  border-top: 1.5px solid #4d424d;
+  justify-content: space-between;
+}
+
+.icons {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-top: 5px;
+}

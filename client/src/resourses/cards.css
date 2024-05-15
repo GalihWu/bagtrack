@@ -1,0 +1,42 @@
+.card {
+  border: 1px solid gray;
+  border-radius: 5px !important;
+  width: 220px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card:hover {
+  box-shadow: 0 0 7px rgb(189, 189, 189);
+}
+
+.card img {
+  object-fit: cover;
+  overflow: hidden;
+  border-radius: 5px 5px 0 0 !important;
+}
+
+.card-bookings {
+  border: 1px solid gray;
+  border-radius: 5px !important;
+  width: 180px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.numbering {
+  position: absolute;
+  top: 15px;
+  left: 0px;
+  width: 40px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ff8300;
+  color: white;
+}
