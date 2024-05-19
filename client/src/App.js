@@ -24,6 +24,7 @@ import AdminHome from './pages/Admin/AdminHome';
 import AdminBaglogs from './pages/Admin/AdminBaglogs';
 import AdminUsers from './pages/Admin/AdminUsers';
 import AdminBookings from './pages/Admin/AdminBookings';
+import AdminOrderCompleted from './pages/Admin/AdminOrderCompleted';
 
 function App() {
   const { loading } = useSelector((state) => state.alerts);
@@ -111,6 +112,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AdminBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orderCompleted"
+            element={
+              <ProtectedRoute>
+                <AdminOrderCompleted />
               </ProtectedRoute>
             }
           />

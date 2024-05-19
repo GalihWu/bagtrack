@@ -63,6 +63,11 @@ function DefaultLayout({ children }) {
       icon: 'ri-archive-line',
     },
     {
+      name: 'Order Completed',
+      path: '/admin/orderCompleted',
+      icon: 'ri-checkbox-multiple-line',
+    },
+    {
       name: 'Logout',
       path: '/logout',
       icon: 'ri-logout-box-line',

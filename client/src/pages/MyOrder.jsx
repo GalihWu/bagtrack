@@ -3,11 +3,15 @@ import { message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { axiosInstance } from '../helpers/axiosInstance';
 import { ShowLoading, HideLoading } from '../redux/alertsSlice';
-import { GrLinkNext } from 'react-icons/gr';
-import { FaTrashAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
+// ico
+import { GrFormNextLink } from 'react-icons/gr';
+import { IoTrashBin } from 'react-icons/io5';
+
+// component
 import PageTitle from '../components/PageTitle';
+import moment from 'moment';
 
 function MyOrder() {
   const [bookings, setBookings] = useState([]);
@@ -19,6 +23,7 @@ function MyOrder() {
     { header: 'Baglog Yang Dipesan' },
     { header: 'Status' },
     { header: 'Tanggal Pesan' },
+    { header: 'Estimasi Selesai' },
     { header: 'Action' },
   ];
 
@@ -82,33 +87,19 @@ function MyOrder() {
   // Menghitung indeks data pertama dan terakhir untuk setiap halaman
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
-  const currentData = bookings.slice(indexOfFirstData, indexOfLastData);
+  // const currentData = bookings.slice(indexOfFirstData, indexOfLastData);
+
+  const filteredBookings = bookings.filter(
+    (booking) => booking.status !== 'Selesai'
+  );
+
+  const paginatedData = filteredBookings.slice(
+    indexOfFirstData,
+    indexOfLastData
+  );
 
   // Mengubah halaman
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  function formatDate(date) {
-    const monthNames = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-
-    const day = date.getDate();
-    const monthIndex = date.getMonth();
-    const year = date.getFullYear();
-
-    return `${day} ${monthNames[monthIndex]} ${year}`;
-  }
 
   useEffect(() => {
     getBookings();
@@ -131,7 +122,7 @@ function MyOrder() {
             </tr>
           </thead>
           <tbody>
-            {currentData.map((item, i) => (
+            {paginatedData.map((item, i) => (
               <tr key={i} className="even:bg-dark-yellow-30">
                 <td className="p-table">
                   {i + 1 + (currentPage - 1) * dataPerPage}
@@ -139,15 +130,21 @@ function MyOrder() {
                 <td className="p-table">{item.name}</td>
                 <td className="p-table">{item.status}</td>
                 <td className="p-table">
-                  {formatDate(new Date(item.createdAt))}
+                  {moment(item.createdAt).format('DD-MM-YYYY')}
                 </td>
                 <td className="p-table">
-                  <FaTrashAlt
-                    className="pointer me-3"
-                    onClick={() => deleteBooking(item.key)}
-                  />
-                  <GrLinkNext
-                    className="pointer"
+                  {item.estimation &&
+                    moment(item.estimation).format('DD-MM-YYYY')}
+                </td>
+                <td className="p-table d-flex">
+                  {!item.estimation && (
+                    <IoTrashBin
+                      className="pointer action"
+                      onClick={() => deleteBooking(item.key)}
+                    />
+                  )}
+                  <GrFormNextLink
+                    className="pointer action"
                     onClick={() => {
                       navigate(`/my-order/${item._id}`);
                     }}
@@ -164,14 +161,14 @@ function MyOrder() {
       {/* pagination */}
       <div className="justify-content-center d-flex">
         <nav className="d-flex align-items-center gap-1">
-          {bookings.length > dataPerPage &&
+          {filteredBookings.length > dataPerPage &&
             Array.from({
-              length: Math.ceil(bookings.length / dataPerPage),
+              length: Math.ceil(filteredBookings.length / dataPerPage),
             }).map((_, i) => (
               <button
                 key={i}
-                className={`pag rounded-md $ {
-                  i + 1 === currentPage? 'orange-1 text-white' : ''
+                className={`page rounded-md ${
+                  i + 1 === currentPage ? 'orange-1 text-white' : ''
                 }`}
                 onClick={() => paginate(i + 1)}
               >

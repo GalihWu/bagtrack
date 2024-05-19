@@ -5,17 +5,17 @@ import { useDispatch } from 'react-redux';
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { HideLoading, ShowLoading } from '../../redux/alertsSlice';
 import { useReactToPrint } from 'react-to-print';
-import { GrLinkNext } from 'react-icons/gr';
 
 // Component
 import PageTitle from '../../components/PageTitle';
 import Search from '../../components/Search';
 import '../../resourses/table.css';
 
-function Bookings() {
+function OrderCompleted() {
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [bookings, setBookings] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
 
   const componentRef = useRef();
@@ -26,14 +26,6 @@ function Bookings() {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
 
-  // Menghitung indeks data pertama dan terakhir untuk setiap halaman
-  const indexOfLastData = currentPage * dataPerPage;
-  const indexOfFirstData = indexOfLastData - dataPerPage;
-  const currentData = bookings.slice(indexOfFirstData, indexOfLastData);
-
-  // Mengubah halaman
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   // table header
   const columns = [
     { header: 'No.' },
@@ -41,8 +33,6 @@ function Bookings() {
     { header: 'Jumlah Pesanan' },
     { header: 'Total Tagihan' },
     { header: 'Status' },
-    { header: 'Estimasi Waktu' },
-    { header: 'Action' },
   ];
 
   // mendapatkan data bookings
@@ -72,65 +62,30 @@ function Bookings() {
     }
   };
 
-  //  Mengubah status dan menambahkan estimasi waktu
-  const handleChangeStatus = async (record) => {
-    try {
-      dispatch(ShowLoading());
-      const response = await axiosInstance.post(
-        '/api/bookings/update-booking',
-        {
-          _id: record.key, // Pastikan ini adalah _id yang benar
-          status: 'Proses',
-          estimation: moment().add(9, 'days').format('YYYY-MM-DD'),
-        }
-      );
-      dispatch(HideLoading());
-      if (response.data.success) {
-        message.success('Booking status updated successfully!');
-        // update the local state
-        const updatedBookings = bookings.map((booking) => {
-          if (booking.key === record.key) {
-            // Gunakan _id untuk membandingkan
-            return {
-              ...booking,
-              status: 'Proses', // Pastikan status ini sesuai dengan yang diinginkan
-              estimation: moment().add(9, 'days').format('YYYY-MM-DD'),
-            };
-          }
-          return booking;
-        });
-        setBookings(updatedBookings);
-      } else {
-        message.error(response.data.message);
-      }
-    } catch (error) {
-      dispatch(HideLoading());
-      message.error(error.message);
-    }
+  // format price
+  const formattedPrice = (price) =>
+    price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
   };
 
-  function formatDate(date) {
-    const monthNames = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
+  // Menghitung indeks data pertama dan terakhir untuk setiap halaman
+  const indexOfLastData = currentPage * dataPerPage;
+  const indexOfFirstData = indexOfLastData - dataPerPage;
 
-    const day = date.getDate();
-    const monthIndex = date.getMonth();
-    const year = date.getFullYear();
+  const filteredBookings = bookings
+    .filter((booking) =>
+      booking.user.name.toLowerCase().includes(searchText.toLowerCase())
+    )
+    .filter((booking) => booking.status === 'Selesai');
 
-    return `${day} ${monthNames[monthIndex]} ${year}`;
-  }
+  const paginatedData = filteredBookings.slice(
+    indexOfFirstData,
+    indexOfLastData
+  );
+  // Mengubah halaman
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   useEffect(() => {
     getBookings();
@@ -140,7 +95,13 @@ function Bookings() {
     <div className="container-bookings">
       <PageTitle title="Bookings" />
       {/* search */}
-      <Search placeholder={'Cari nama pengguna'} />
+      <Search
+        placeholder={'Cari nama pengguna'}
+        value={searchText}
+        onChange={handleSearch}
+        searchText={searchText}
+        onSearch={handleSearch}
+      />
 
       {/* body */}
       <div className="table-parent">
@@ -156,37 +117,16 @@ function Bookings() {
             </tr>
           </thead>
           <tbody>
-            {bookings &&
-              currentData.map((item, i) => (
+            {filteredBookings &&
+              paginatedData.map((item, i) => (
                 <tr key={i} className="even:bg-dark-yellow-30">
                   <td className="p-table">
                     {i + 1 + (currentPage - 1) * dataPerPage}
                   </td>
                   <td className="p-table">{item.user.name}</td>
                   <td className="p-table">{item.totalOrder}</td>
-                  <td className="p-table">{item.totalPrice}</td>
+                  <td className="p-table">{formattedPrice(item.totalPrice)}</td>
                   <td className="p-table">{item.status}</td>
-                  <td className="p-table">
-                    {item.estimation && formatDate(new Date(item.estimation))}
-                  </td>
-                  {/* action */}
-                  <td className="p-table d-flex">
-                    <p
-                      className="pointer"
-                      onClick={() => handleChangeStatus(item)}
-                    >
-                      lanjut
-                    </p>
-                    <div
-                      className="pointer action"
-                      onClick={() => {
-                        setSelectedBooking(item);
-                        setShowPrintModal(true);
-                      }}
-                    >
-                      <GrLinkNext />
-                    </div>
-                  </td>
                 </tr>
               ))}
           </tbody>
@@ -196,9 +136,9 @@ function Bookings() {
       {/* pagination */}
       <div className="justify-content-center d-flex">
         <nav className="d-flex align-items-center gap-1">
-          {bookings.length > dataPerPage &&
+          {filteredBookings.length > dataPerPage &&
             Array.from({
-              length: Math.ceil(bookings.length / dataPerPage),
+              length: Math.ceil(filteredBookings.length / dataPerPage),
             }).map((_, i) => (
               <button
                 key={i}
@@ -248,4 +188,4 @@ function Bookings() {
   );
 }
 
-export default Bookings;
+export default OrderCompleted;

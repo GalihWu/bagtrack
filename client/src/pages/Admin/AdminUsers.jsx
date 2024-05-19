@@ -7,12 +7,13 @@ import { HideLoading, ShowLoading } from '../../redux/alertsSlice';
 
 import PageTitle from '../../components/PageTitle';
 import '../../resourses/table.css';
-import { GrLinkNext } from 'react-icons/gr';
 import Search from '../../components/Search';
+import moment from 'moment';
 
 function AdminUsers() {
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   const columns = [
     { header: 'No.' },
@@ -49,28 +50,13 @@ function AdminUsers() {
   // Mengubah halaman
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  function formatDate(date) {
-    const monthNames = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
+  };
 
-    const day = date.getDate();
-    const monthIndex = date.getMonth();
-    const year = date.getFullYear();
-
-    return `${day} ${monthNames[monthIndex]} ${year}`;
-  }
+  const filteredBookings = currentData.filter((booking) =>
+    booking.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   useEffect(() => {
     getUsers();
@@ -79,7 +65,13 @@ function AdminUsers() {
     <div>
       <PageTitle title="Users" />
 
-      <Search placeholder={'Cari nama pengguna'} />
+      <Search
+        placeholder={'Cari nama pengguna'}
+        value={searchText}
+        onChange={handleSearch}
+        searchText={searchText}
+        onSearch={handleSearch}
+      />
 
       {/* body */}
       <div className="table-parent">
@@ -95,21 +87,22 @@ function AdminUsers() {
             </tr>
           </thead>
           <tbody>
-            {currentData.map((item, i) => (
-              <tr key={i} className="even:bg-dark-yellow-30">
-                <td className="p-table">
-                  {i + 1 + (currentPage - 1) * dataPerPage}
-                </td>
-                <td className="p-table">{item.name}</td>
-                <td className="p-table">{item.email}</td>
-                <td className="p-table">
-                  {formatDate(new Date(item.createdAt))}
-                </td>
-                <td className="p-table">?</td>
+            {filteredBookings &&
+              filteredBookings.map((item, i) => (
+                <tr key={i} className="even:bg-dark-yellow-30">
+                  <td className="p-table">
+                    {i + 1 + (currentPage - 1) * dataPerPage}
+                  </td>
+                  <td className="p-table">{item.name}</td>
+                  <td className="p-table">{item.email}</td>
+                  <td className="p-table">
+                    {moment(item.createdAt).format('DD-MM-YYYY')}
+                  </td>
+                  <td className="p-table">?</td>
 
-                {/* action */}
-              </tr>
-            ))}
+                  {/* action */}
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

@@ -59,25 +59,6 @@ select {
 .font-semibold {
   font-weight: 600;
 }
-/* buttons */
-
-.primary-btn {
-  background-color: var(--primary) !important;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  height: 40px;
-}
-
-.secondary-btn {
-  background-color: var(--secondary) !important;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  height: 40px;
-}
 
 .outlined {
   border: 2px solid var(--primary) !important;
@@ -85,15 +66,47 @@ select {
   background-color: white !important;
 }
 
-/* button {
-  border-radius: 0 !important;
-} */
+/* Button */
+.primary-btn {
+  background-color: var(--primary) !important;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  height: 40px;
+}
+.primary-btn:hover {
+  transform: translateY(-1px);
+}
+.primary-btn:active {
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  transform: translateY(0);
+}
+
+.secondary-btn {
+  background-color: var(--secondary) !important;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  height: 40px;
+}
+
+.secondary-btn:hover {
+  transform: translateY(-1px);
+}
+.secondary-btn:active {
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  transform: translateY(0);
+}
 
 .button5 {
   align-items: center;
   background-color: #ff9626;
   border: 1px solid transparent;
-  border-radius: 8px !important;
+  border-radius: 5px !important;
   box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
   box-sizing: border-box;
   color: #fff;

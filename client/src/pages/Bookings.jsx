@@ -10,7 +10,11 @@ import Search from '../components/Search';
 
 function Bookings() {
   const [bookings, setBookings] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [dataPerPage] = useState(15);
 
   const getBookings = async () => {
     try {
@@ -26,7 +30,6 @@ function Bookings() {
             ...booking,
             ...booking.baglog,
             key: booking._id,
-            numbering: index + 1,
           };
         });
         setBookings(mappedData);
@@ -39,6 +42,27 @@ function Bookings() {
     }
   };
 
+  // Handle Search
+  const handleSearch = (event) => {
+    setSearchText(event.target.value);
+  };
+
+  const indexOfLastData = currentPage * dataPerPage;
+  const indexOfFirstData = indexOfLastData - dataPerPage;
+
+  const filteredBookings = bookings
+    .filter((booking) =>
+      booking.user.name.toLowerCase().includes(searchText.toLowerCase())
+    )
+    .filter((booking) => booking.status !== 'Selesai');
+
+  const paginatedData = filteredBookings.slice(
+    indexOfFirstData,
+    indexOfLastData
+  );
+  // Mengubah halaman
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   useEffect(() => {
     getBookings();
   }, []);
@@ -46,13 +70,21 @@ function Bookings() {
   return (
     <div>
       <PageTitle title="Bookings" />
-      <Search placeholder={'Cari nama pengguna'} />
+      <Search
+        placeholder={'Cari nama pengguna'}
+        value={searchText}
+        onChange={handleSearch}
+        searchText={searchText}
+        onSearch={handleSearch}
+      />
 
       <div className="mt-4 d-flex gap-5 flex-wrap">
-        {bookings &&
-          bookings.map((item, i) => (
+        {paginatedData &&
+          paginatedData.map((item, i) => (
             <div key={i} className="card-bookings position-relative">
-              <p className="numbering">{item.numbering}</p>
+              <p className="numbering">
+                {i + 1 + (currentPage - 1) * dataPerPage}
+              </p>
               <img
                 src={profile}
                 className="mb-2"
@@ -69,6 +101,26 @@ function Bookings() {
               </div>
             </div>
           ))}
+      </div>
+
+      {/* pagination */}
+      <div className="justify-content-center d-flex">
+        <nav className="d-flex align-items-center gap-1">
+          {filteredBookings.length > dataPerPage &&
+            Array.from({
+              length: Math.ceil(filteredBookings.length / dataPerPage),
+            }).map((_, i) => (
+              <button
+                key={i}
+                className={`page rounded-md ${
+                  i + 1 === currentPage ? 'orange-1 text-white' : ''
+                }`}
+                onClick={() => paginate(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+        </nav>
       </div>
     </div>
   );
