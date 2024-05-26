@@ -1,22 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { message } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import moment from 'moment';
+import { Modal, message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { axiosInstance } from '../helpers/axiosInstance';
 import { ShowLoading, HideLoading } from '../redux/alertsSlice';
-import { useNavigate } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
 
 // ico
-import { GrFormNextLink } from 'react-icons/gr';
+import { GrFormNextLink, GrLocation } from 'react-icons/gr';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { IoTrashBin } from 'react-icons/io5';
+import ico from '../assets/ico.png';
+import Image from '../assets/produk.jpg';
+import { RiShoppingBasket2Line } from 'react-icons/ri';
 
 // component
 import PageTitle from '../components/PageTitle';
-import moment from 'moment';
+import confirm from 'antd/lib/modal/confirm';
 
 function MyOrder() {
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [bookings, setBookings] = useState([]);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   const columns = [
     { header: 'No.' },
@@ -56,29 +67,43 @@ function MyOrder() {
 
   // delete bookings
   const deleteBooking = async (id) => {
-    try {
-      dispatch(ShowLoading());
-      console.log(id);
-      const response = await axiosInstance.post(
-        '/api/bookings/delete-booking/',
-        {
-          _id: id,
+    confirm({
+      title: 'Apakah kamu yakin menghapus pesanan ini?',
+      content: 'Pesanan ini akan dihapus permanen',
+      icon: <ExclamationCircleOutlined />,
+      okText: 'Hapus',
+      okType: 'danger',
+      cancelText: 'Batal',
+      centered: false,
+      maskClosable: true,
+      onOk: async () => {
+        try {
+          dispatch(ShowLoading());
+          const response = await axiosInstance.post(
+            '/api/bookings/delete-booking/',
+            {
+              _id: id,
+            }
+          );
+          dispatch(HideLoading());
+          if (response.data.success) {
+            message.success(response.data.message);
+            setBookings((prevBookings) =>
+              prevBookings.filter((booking) => booking.key !== id)
+            );
+            getBookings();
+          } else {
+            message.error(response.data.message);
+          }
+        } catch (error) {
+          dispatch(HideLoading());
+          message.error(error.message);
         }
-      );
-      dispatch(HideLoading());
-      if (response.data.success) {
-        message.success(response.data.message);
-        setBookings((prevBookings) =>
-          prevBookings.filter((booking) => booking.key !== id)
-        );
-        getBookings();
-      } else {
-        message.error(response.data.message);
-      }
-    } catch (error) {
-      dispatch(HideLoading());
-      message.error(error.message);
-    }
+      },
+      onCancel: () => {
+        console.log('Cancel');
+      },
+    });
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,7 +132,7 @@ function MyOrder() {
 
   return (
     <div>
-      <PageTitle title="Bookings" />
+      <PageTitle title="My Order" />
 
       <div className="table-parent">
         <table className="table">
@@ -133,20 +158,29 @@ function MyOrder() {
                   {moment(item.createdAt).format('DD-MM-YYYY')}
                 </td>
                 <td className="p-table">
-                  {item.estimation &&
-                    moment(item.estimation).format('DD-MM-YYYY')}
+                  {item.estimationMin &&
+                    `${moment(item.estimationMin).format(
+                      'DD-MM-YYYY'
+                    )} sampai `}
+                  {item.estimationMax &&
+                    moment(item.estimationMax).format('DD-MM-YYYY')}
                 </td>
                 <td className="p-table d-flex">
-                  {!item.estimation && (
+                  {!item.estimationMin && (
                     <IoTrashBin
+                      title="Hapus Pesanan"
+                      color="white"
                       className="pointer action"
+                      style={{ backgroundColor: '#ff4d4f' }}
                       onClick={() => deleteBooking(item.key)}
                     />
                   )}
                   <GrFormNextLink
                     className="pointer action"
+                    title="Detail Pesanan"
                     onClick={() => {
-                      navigate(`/my-order/${item._id}`);
+                      setSelectedBooking(item);
+                      setShowPrintModal(true);
                     }}
                   />
                 </td>
@@ -177,6 +211,77 @@ function MyOrder() {
             ))}
         </nav>
       </div>
+      {/* Modal */}
+      {showPrintModal && (
+        <Modal
+          title="Print Pesanan"
+          onCancel={() => {
+            setShowPrintModal(false);
+            setSelectedBooking(null);
+          }}
+          visible={showPrintModal}
+          okText="Print"
+          onOk={handlePrint}
+        >
+          <div className="d-flex flex-column p-4" ref={componentRef}>
+            <div className="detail-container">
+              {/* title */}
+              <div className="d-flex gap-3 my-3 align-items-center pointer">
+                <h1 className="text-xl font-medium"> Detail Pesanan</h1>
+              </div>
+              <hr />
+
+              {/* body */}
+              <div className="d-flex flex-column gap-4 mb-3">
+                <div className="d-flex gap-3 align-items-center font-semibold">
+                  <GrLocation style={{ width: '20px', height: '20px' }} />
+                  <div>Alamat Pengiriman</div>
+                </div>
+                <div>
+                  <p>Wahyu Triyanto</p>
+                  <p>(+62) 81123456789</p>
+                  <p>Jl Asia Afrika No 123 Kota Bandung 40526</p>
+                </div>
+                <div className="d-flex gap-3 align-items-center">
+                  <img src={ico} alt="ico" width={30} height={30} />
+                  <div>BagTrack</div>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex align-items-center">
+                    <img src={Image} alt="produk" width={40} height={40} />
+                    <div className="ms-3">{selectedBooking.name}</div>
+                  </div>
+                  <p className="">
+                    X <span>1000</span>
+                  </p>
+                </div>
+                <hr />
+                <div className="d-flex gap-3 align-items-center font-semibold">
+                  <RiShoppingBasket2Line
+                    style={{ width: '20px', height: '20px' }}
+                  />
+                  <div>Detail Pesanan</div>
+                </div>
+                <div className="d-flex flex-column">
+                  <div className="d-flex justify-content-between pb-2">
+                    <div>Harga /pcs</div>
+                    <div>
+                      Rp <span>2.000</span>
+                    </div>
+                  </div>
+                  <hr />
+                  <div className="d-flex justify-content-between font-semibold  mt-2">
+                    <div>Subtotal</div>
+                    <div>
+                      Rp <span>2.000.000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -132,7 +132,7 @@ router.post('/update-user', authMiddleware, async (req, res) => {
       success: true,
       data: user,
     });
-  } catch {
+  } catch (error) {
     res.send({
       message: error.message,
       success: false,

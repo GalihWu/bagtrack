@@ -17,7 +17,6 @@ import BookNow from './pages/BookNow';
 import Profile from './pages/Profile';
 import MyOrder from './pages/MyOrder';
 import Bookings from './pages/Bookings';
-import DetailOrder from './pages/DetailOrder';
 
 // Admin
 import AdminHome from './pages/Admin/AdminHome';
@@ -57,14 +56,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/my-order/:id"
-            element={
-              <ProtectedRoute>
-                <DetailOrder />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path="/bookings"
             element={

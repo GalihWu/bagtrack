@@ -66,6 +66,11 @@ select {
   background-color: white !important;
 }
 
+/* shadow */
+.shadow-widget {
+  box-shadow: -7px 7px 9px -4px rgba(0, 0, 0, 0.2);
+}
+
 /* Button */
 .primary-btn {
   background-color: var(--primary) !important;

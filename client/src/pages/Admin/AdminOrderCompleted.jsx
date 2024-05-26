@@ -32,6 +32,7 @@ function OrderCompleted() {
     { header: 'Nama Pengguna' },
     { header: 'Jumlah Pesanan' },
     { header: 'Total Tagihan' },
+    { header: 'Pesanan Selesai' },
     { header: 'Status' },
   ];
 
@@ -126,6 +127,9 @@ function OrderCompleted() {
                   <td className="p-table">{item.user.name}</td>
                   <td className="p-table">{item.totalOrder}</td>
                   <td className="p-table">{formattedPrice(item.totalPrice)}</td>
+                  <td className="p-table">
+                    {moment(item.updatedAt).format('DD-MM-YYYY')}
+                  </td>
                   <td className="p-table">{item.status}</td>
                 </tr>
               ))}
@@ -156,7 +160,7 @@ function OrderCompleted() {
       {/* Modal */}
       {showPrintModal && (
         <Modal
-          title="Print Ticket"
+          title="Print Pesanan"
           onCancel={() => {
             setShowPrintModal(false);
             setSelectedBooking(null);

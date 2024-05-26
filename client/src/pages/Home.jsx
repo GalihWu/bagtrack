@@ -1,18 +1,20 @@
-import { Col, message, Row } from 'antd';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Col, message, Row } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import Baglog from '../components/Baglog';
-// import { axiosInstance } from '../helpers/axiosInstance';
-import { HideLoading, ShowLoading } from '../redux/alertsSlice';
 
+// Component
+import Baglog from '../components/Baglog';
 import PageTitle from '../components/PageTitle';
+import { HideLoading, ShowLoading } from '../redux/alertsSlice';
 
 function Home() {
   const { user } = useSelector((state) => state.users);
   const [filters = {}, setFilters] = useState({});
   const dispatch = useDispatch();
   const [baglogs, setBaglogs] = useState([]);
+
+  // Get Baglogs
   const getBaglogs = async () => {
     const tempFilters = {};
     Object.keys(filters).forEach((key) => {
@@ -46,6 +48,7 @@ function Home() {
   useEffect(() => {
     getBaglogs();
   }, []);
+
   return (
     <div>
       <PageTitle title={'Home'} />

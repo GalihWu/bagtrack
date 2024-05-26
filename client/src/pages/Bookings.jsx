@@ -70,13 +70,13 @@ function Bookings() {
   return (
     <div>
       <PageTitle title="Bookings" />
-      <Search
+      {/* <Search
         placeholder={'Cari nama pengguna'}
         value={searchText}
         onChange={handleSearch}
         searchText={searchText}
         onSearch={handleSearch}
-      />
+      /> */}
 
       <div className="mt-4 d-flex gap-5 flex-wrap">
         {paginatedData &&

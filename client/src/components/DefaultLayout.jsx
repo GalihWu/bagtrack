@@ -2,6 +2,7 @@ import React from 'react';
 import '../resourses/layout.css';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { FaWhatsapp } from 'react-icons/fa';
 
 import ico from '../assets/ico.png';
 import profile from '../assets/profile.jpg';
@@ -37,11 +38,11 @@ function DefaultLayout({ children }) {
     },
   ];
   const adminMenu = [
-    {
-      name: 'Home',
-      icon: 'ri-home-line',
-      path: '/',
-    },
+    // {
+    //   name: 'Home',
+    //   icon: 'ri-home-line',
+    //   path: '/',
+    // },
     {
       name: 'Dashboard',
       path: '/admin',
@@ -115,6 +116,9 @@ function DefaultLayout({ children }) {
             );
           })}
         </div>
+        <a href="https://wa.link/5eurxz" className="chat">
+          <FaWhatsapp size={30} color="white" />
+        </a>
         <div className="bottom">
           <img
             alt="profile"

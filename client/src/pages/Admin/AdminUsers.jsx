@@ -20,7 +20,7 @@ function AdminUsers() {
     { header: 'Nama Pengguna' },
     { header: 'Email' },
     { header: 'Date at' },
-    { header: 'Action' },
+    { header: 'Alamat' },
   ];
 
   const getUsers = async () => {
@@ -94,11 +94,11 @@ function AdminUsers() {
                     {i + 1 + (currentPage - 1) * dataPerPage}
                   </td>
                   <td className="p-table">{item.name}</td>
+                  <td className="p-table">{item.address}</td>
                   <td className="p-table">{item.email}</td>
                   <td className="p-table">
                     {moment(item.createdAt).format('DD-MM-YYYY')}
                   </td>
-                  <td className="p-table">?</td>
 
                   {/* action */}
                 </tr>

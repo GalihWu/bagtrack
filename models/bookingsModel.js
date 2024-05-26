@@ -24,7 +24,11 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: 'Menunggu Antrean',
     },
-    estimation: {
+    estimationMin: {
+      type: Date,
+      required: false,
+    },
+    estimationMax: {
       type: Date,
       required: false,
     },

@@ -87,3 +87,45 @@
   overflow-x: hidden !important;
   height: 100vh;
 }
+
+.chat {
+  position: fixed;
+  bottom: 50px;
+  right: 10px;
+  margin: 20px;
+  cursor: pointer;
+  background-color: #25d366;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: all 0.5s ease;
+  transform: translateX(50%);
+  opacity: 0.5;
+}
+
+.chat:hover {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.chat:active {
+  transform: translateX(0) scale(0.9);
+}
+
+.chat a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: white;
+  text-decoration: none;
+}
+
+.chat a:hover {
+  text-decoration: none;
+}

@@ -28,7 +28,13 @@ function ProtectedRoute({ children }) {
       );
       dispatch(HideLoading());
       if (response.data.success) {
-        dispatch(SetUser(response.data.data));
+        const user = response.data.data;
+        dispatch(SetUser(user));
+        if (user.isAdmin) {
+          navigate('/admin'); // Redirect to /admin page if user is an admin
+        } else {
+          navigate('/'); // Redirect to root page if user is not an admin
+        }
       } else {
         localStorage.removeItem('token');
         message.error(response.data.message);
@@ -52,7 +58,7 @@ function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (window.location.pathname.includes('admin')) {
-      if (user?.isAdmin) {
+      if (user?.isAdmin === false) {
         message.error('You are not authorized to access this page');
         window.location.href = '/';
       }
