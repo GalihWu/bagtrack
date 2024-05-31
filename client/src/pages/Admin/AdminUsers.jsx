@@ -18,9 +18,10 @@ function AdminUsers() {
   const columns = [
     { header: 'No.' },
     { header: 'Nama Pengguna' },
-    { header: 'Email' },
-    { header: 'Date at' },
     { header: 'Alamat' },
+    { header: 'Email' },
+    { header: 'Tanggal Daftar' },
+    { header: 'Aksi' },
   ];
 
   const getUsers = async () => {
@@ -30,6 +31,39 @@ function AdminUsers() {
       dispatch(HideLoading());
       if (response.data.success) {
         setUsers(response.data.data);
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
+
+  const updateUserPermissions = async (user, action) => {
+    try {
+      let payload = null;
+      if (action === 'approved') {
+        payload = {
+          ...user,
+          isApproved: true,
+        };
+      } else if (action === 'block') {
+        payload = {
+          ...user,
+          isApproved: false,
+        };
+      }
+
+      dispatch(ShowLoading());
+      const response = await axiosInstance.post(
+        '/api/users/update-user',
+        payload
+      );
+      dispatch(HideLoading());
+      if (response.data.success) {
+        getUsers();
+        message.success(response.data.message);
       } else {
         message.error(response.data.message);
       }
@@ -54,8 +88,10 @@ function AdminUsers() {
     setSearchText(event.target.value);
   };
 
-  const filteredBookings = currentData.filter((booking) =>
-    booking.name.toLowerCase().includes(searchText.toLowerCase())
+  const filteredUsers = currentData.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchText.toLowerCase()) &&
+      !user.isAdmin
   );
 
   useEffect(() => {
@@ -87,8 +123,8 @@ function AdminUsers() {
             </tr>
           </thead>
           <tbody>
-            {filteredBookings &&
-              filteredBookings.map((item, i) => (
+            {filteredUsers &&
+              filteredUsers.map((item, i) => (
                 <tr key={i} className="even:bg-dark-yellow-30">
                   <td className="p-table">
                     {i + 1 + (currentPage - 1) * dataPerPage}
@@ -98,6 +134,33 @@ function AdminUsers() {
                   <td className="p-table">{item.email}</td>
                   <td className="p-table">
                     {moment(item.createdAt).format('DD-MM-YYYY')}
+                  </td>
+                  <td className="p-table">
+                    {item.isApproved ? (
+                      <>
+                        {' '}
+                        <span className="text-gray">Acc</span> |{' '}
+                        <span
+                          className="pointer"
+                          onClick={() => updateUserPermissions(item, 'block')}
+                        >
+                          Block
+                        </span>{' '}
+                      </>
+                    ) : (
+                      <>
+                        {' '}
+                        <span
+                          className="pointer"
+                          onClick={() =>
+                            updateUserPermissions(item, 'approved')
+                          }
+                        >
+                          Acc
+                        </span>{' '}
+                        | <span className="text-gray">Block</span>{' '}
+                      </>
+                    )}
                   </td>
 
                   {/* action */}

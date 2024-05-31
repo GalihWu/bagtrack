@@ -28,10 +28,11 @@ router.post('/add-baglog', authMiddleware, async (req, res) => {
 
 router.post('/update-baglog', authMiddleware, async (req, res) => {
   try {
-    await Baglog.findByIdAndUpdate(req.body._id, req.body);
-    return res.status(200).send({
-      success: true,
+    const baglog = await Baglog.findByIdAndUpdate(req.body._id, req.body);
+    res.send({
       message: 'Baglog updated successfully',
+      success: true,
+      data: baglog,
     });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

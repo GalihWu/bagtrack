@@ -12,7 +12,6 @@ const { confirm } = Modal;
 
 const Profile = () => {
   const [users, setUsers] = useState({});
-  // const [selectedFile, setSelectedFile] = useState(null);
   const dispatch = useDispatch();
   const formRef = useRef(null);
 

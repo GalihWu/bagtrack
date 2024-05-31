@@ -6,7 +6,7 @@ import { HideLoading, ShowLoading } from '../redux/alertsSlice';
 
 import PageTitle from '../components/PageTitle';
 import profile from '../assets/profile2.jpg';
-import Search from '../components/Search';
+// import Search from '../components/Search';
 
 function Bookings() {
   const [bookings, setBookings] = useState([]);
@@ -51,8 +51,10 @@ function Bookings() {
   const indexOfFirstData = indexOfLastData - dataPerPage;
 
   const filteredBookings = bookings
-    .filter((booking) =>
-      booking.user.name.toLowerCase().includes(searchText.toLowerCase())
+    .filter(
+      (booking) =>
+        booking.user.name.toLowerCase().includes(searchText.toLowerCase()) &&
+        booking.user.isApproved
     )
     .filter((booking) => booking.status !== 'Selesai');
 

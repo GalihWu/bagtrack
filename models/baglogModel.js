@@ -21,6 +21,10 @@ const baglogSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  dProduction: {
+    type: Number,
+    default: 4500,
+  },
 });
 
 module.exports = mongoose.model('baglogs', baglogSchema);

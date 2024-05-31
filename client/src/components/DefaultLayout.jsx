@@ -17,17 +17,17 @@ function DefaultLayout({ children }) {
       path: '/',
     },
     {
-      name: 'My Order',
+      name: 'Pesanan Saya',
       icon: 'ri-shopping-bag-line',
       path: '/my-order',
     },
     {
-      name: 'Bookings',
+      name: 'Antrean',
       icon: 'ri-file-list-line',
       path: '/bookings',
     },
     {
-      name: 'Profile',
+      name: 'Profil',
       icon: 'ri-user-line',
       path: '/profile',
     },
@@ -38,11 +38,6 @@ function DefaultLayout({ children }) {
     },
   ];
   const adminMenu = [
-    // {
-    //   name: 'Home',
-    //   icon: 'ri-home-line',
-    //   path: '/',
-    // },
     {
       name: 'Dashboard',
       path: '/admin',
@@ -54,17 +49,17 @@ function DefaultLayout({ children }) {
     //   icon: 'ri-add-box-line',
     // },
     {
-      name: 'Users',
+      name: 'Pelanggan',
       path: '/admin/users',
       icon: 'ri-user-line',
     },
     {
-      name: 'Bookings',
+      name: 'Pesanan',
       path: '/admin/bookings',
       icon: 'ri-archive-line',
     },
     {
-      name: 'Order Completed',
+      name: 'Pesanan Selesai',
       path: '/admin/orderCompleted',
       icon: 'ri-checkbox-multiple-line',
     },

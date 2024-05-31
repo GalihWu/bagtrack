@@ -18,7 +18,6 @@ import Search from '../../components/Search';
 import '../../resourses/table.css';
 import { RiShoppingBasket2Line } from 'react-icons/ri';
 
-import { CheckCircleOutlined } from '@ant-design/icons';
 const { confirm } = Modal;
 
 function Bookings() {
@@ -26,6 +25,7 @@ function Bookings() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [dailyProduction, setDailyProduction] = useState(0);
   const dispatch = useDispatch();
 
   const componentRef = useRef();
@@ -53,6 +53,54 @@ function Bookings() {
     { header: 'Estimasi Waktu' },
     { header: 'Action' },
   ];
+
+  // Get baglog
+  const getBaglog = async () => {
+    try {
+      dispatch(ShowLoading());
+      const response = await axiosInstance.post(
+        '/api/baglogs/get-baglog-by-id',
+        {
+          _id: '663ad95cb2e943260c6bb067',
+        }
+      );
+      dispatch(HideLoading());
+      if (response.data.success) {
+        setDailyProduction(response.data.data.dProduction);
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
+
+  // fungsi untuk mengubah dailyProduction
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      dispatch(ShowLoading());
+      const response = await axiosInstance.post('/api/baglogs/update-baglog', {
+        dProduction: Number(dailyProduction),
+        _id: '663ad95cb2e943260c6bb067',
+      });
+      dispatch(HideLoading());
+      if (response.data.success) {
+        message.success(response.data.message);
+        setDailyProduction(response.data.data?.dProduction);
+        console.log(dailyProduction);
+      } else {
+        message.error(response.data.message);
+      }
+      getBaglog();
+      dispatch(HideLoading());
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
 
   // mendapatkan data bookings
   const getBookings = async () => {
@@ -92,10 +140,13 @@ function Bookings() {
         try {
           dispatch(ShowLoading());
           let estimationMin, estimationMax;
-          if (record.totalOrder <= 4500) {
+          if (record.totalOrder <= dailyProduction) {
             estimationMin = moment().add(15, 'days').format('YYYY-MM-DD');
             estimationMax = moment().add(20, 'days').format('YYYY-MM-DD');
-          } else if (record.totalOrder > 4500 && record.totalOrder <= 9000) {
+          } else if (
+            record.totalOrder > dailyProduction &&
+            record.totalOrder <= 2 * dailyProduction
+          ) {
             estimationMin = moment().add(19, 'days').format('YYYY-MM-DD');
             estimationMax = moment().add(24, 'days').format('YYYY-MM-DD');
           } else {
@@ -186,8 +237,10 @@ function Bookings() {
     setSearchText(event.target.value);
   };
   const filteredBookings = bookings
-    .filter((booking) =>
-      booking.user.name.toLowerCase().includes(searchText.toLowerCase())
+    .filter(
+      (booking) =>
+        booking.user.name.toLowerCase().includes(searchText.toLowerCase()) &&
+        booking.user.isApproved
     )
     .filter((booking) => booking.status !== 'Selesai');
 
@@ -198,19 +251,34 @@ function Bookings() {
 
   useEffect(() => {
     getBookings();
+    getBaglog();
   }, []);
 
   return (
     <div className="container-bookings">
       <PageTitle title="Bookings" />
       {/* search */}
-      <Search
-        placeholder={'Cari nama pengguna'}
-        value={searchText}
-        onChange={handleSearch}
-        searchText={searchText}
-        onSearch={handleSearch}
-      />
+      <div className="d-flex justify-content-between">
+        <Search
+          placeholder={'Cari nama pengguna'}
+          value={searchText}
+          onChange={handleSearch}
+          searchText={searchText}
+          onSearch={handleSearch}
+        />
+
+        {/* konfigurasi produksi harian */}
+        <form className="d-flex " onSubmit={handleSubmit}>
+          <input
+            placeholder={dailyProduction}
+            type="number"
+            onChange={(e) => setDailyProduction(e.target.value)}
+          />
+          <button type="submit" className="primary-btn ms-3">
+            Simpan
+          </button>
+        </form>
+      </div>
 
       {/* body */}
       <div className="table-parent">

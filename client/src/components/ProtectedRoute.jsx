@@ -29,11 +29,19 @@ function ProtectedRoute({ children }) {
       dispatch(HideLoading());
       if (response.data.success) {
         const user = response.data.data;
-        dispatch(SetUser(user));
-        if (user.isAdmin) {
-          navigate('/admin'); // Redirect to /admin page if user is an admin
+        if (user.isApproved === true) {
+          dispatch(SetUser(user));
+          if (user.isAdmin) {
+            navigate('/admin');
+          } else {
+            navigate('/');
+          }
         } else {
-          navigate('/'); // Redirect to root page if user is not an admin
+          message.error(
+            'Your account is not approved yet. Please contact admin'
+          );
+          localStorage.removeItem('token');
+          navigate('/login');
         }
       } else {
         localStorage.removeItem('token');
