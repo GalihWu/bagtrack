@@ -15,6 +15,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const formRef = useRef(null);
 
+  // get current user
   const getUser = async () => {
     try {
       dispatch(ShowLoading());
@@ -89,7 +90,7 @@ const Profile = () => {
 
   return (
     <div>
-      <PageTitle title={'Profile'} />
+      <PageTitle title={'Profil'} />
       {/* body */}
       <form ref={formRef} onSubmit={handleFormSubmit}>
         <div className="d-flex justify-content-between">

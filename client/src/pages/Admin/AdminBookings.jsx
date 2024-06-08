@@ -79,27 +79,37 @@ function Bookings() {
   // fungsi untuk mengubah dailyProduction
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    try {
-      dispatch(ShowLoading());
-      const response = await axiosInstance.post('/api/baglogs/update-baglog', {
-        dProduction: Number(dailyProduction),
-        _id: '663ad95cb2e943260c6bb067',
-      });
-      dispatch(HideLoading());
-      if (response.data.success) {
-        message.success(response.data.message);
-        setDailyProduction(response.data.data?.dProduction);
-        console.log(dailyProduction);
-      } else {
-        message.error(response.data.message);
-      }
-      getBaglog();
-      dispatch(HideLoading());
-    } catch (error) {
-      dispatch(HideLoading());
-      message.error(error.message);
-    }
+    confirm({
+      title: 'Proses Pesanan',
+      content: `Apakah Anda yakin ingin mengubah produksi hariannya?`,
+      okText: 'Ya',
+      cancelText: 'Tidak',
+      onOk: async () => {
+        try {
+          dispatch(ShowLoading());
+          const response = await axiosInstance.post(
+            '/api/baglogs/update-baglog',
+            {
+              dProduction: Number(dailyProduction),
+              _id: '663ad95cb2e943260c6bb067',
+            }
+          );
+          dispatch(HideLoading());
+          if (response.data.success) {
+            message.success(response.data.message);
+            setDailyProduction(response.data.data?.dProduction);
+            console.log(dailyProduction);
+          } else {
+            message.error(response.data.message);
+          }
+          getBaglog();
+          dispatch(HideLoading());
+        } catch (error) {
+          dispatch(HideLoading());
+          message.error(error.message);
+        }
+      },
+    });
   };
 
   // mendapatkan data bookings
@@ -129,7 +139,7 @@ function Bookings() {
     }
   };
 
-  //  Mengubah status dan menambahkan estimasi waktu
+  // Mengubah status dan menambahkan estimasi waktu yang dinamis
   const handleChangeStatus = async (record) => {
     confirm({
       title: 'Proses Pesanan',
@@ -140,19 +150,19 @@ function Bookings() {
         try {
           dispatch(ShowLoading());
           let estimationMin, estimationMax;
-          if (record.totalOrder <= dailyProduction) {
-            estimationMin = moment().add(15, 'days').format('YYYY-MM-DD');
-            estimationMax = moment().add(20, 'days').format('YYYY-MM-DD');
-          } else if (
-            record.totalOrder > dailyProduction &&
-            record.totalOrder <= 2 * dailyProduction
-          ) {
-            estimationMin = moment().add(19, 'days').format('YYYY-MM-DD');
-            estimationMax = moment().add(24, 'days').format('YYYY-MM-DD');
-          } else {
-            estimationMin = moment().add(23, 'days').format('YYYY-MM-DD');
-            estimationMax = moment().add(28, 'days').format('YYYY-MM-DD');
-          }
+          const baseDaysMin = 15; // Estimasi waktu dasar minimum dalam hari
+          const baseDaysMax = 20; // Estimasi waktu dasar maksimum dalam hari
+          const orderMultiplier = Math.ceil(
+            record.totalOrder / dailyProduction
+          );
+
+          // Menghitung estimasi waktu minimum dan maksimum
+          estimationMin = moment()
+            .add(baseDaysMin + (orderMultiplier - 1) * 4, 'days')
+            .format('YYYY-MM-DD');
+          estimationMax = moment()
+            .add(baseDaysMax + (orderMultiplier - 1) * 4, 'days')
+            .format('YYYY-MM-DD');
 
           const response = await axiosInstance.post(
             '/api/bookings/update-booking',
@@ -163,9 +173,10 @@ function Bookings() {
               estimationMax,
             }
           );
+
           dispatch(HideLoading());
           if (response.data.success) {
-            message.success('Booking status updated successfully!');
+            message.success('Status pemesanan berhasil diperbarui!');
             const updatedBookings = bookings.map((booking) => {
               if (booking.key === record.key) {
                 return {
@@ -188,7 +199,7 @@ function Bookings() {
       },
     });
   };
-
+  // handle status selesai
   const handleStatusDone = async (record) => {
     confirm({
       title: 'Pesanan Selesai',
@@ -229,7 +240,7 @@ function Bookings() {
     });
   };
 
-  // format price
+  // format uang
   const formattedPrice = (price) =>
     price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
 
@@ -256,7 +267,7 @@ function Bookings() {
 
   return (
     <div className="container-bookings">
-      <PageTitle title="Bookings" />
+      <PageTitle title="Pesanan" />
       {/* search */}
       <div className="d-flex justify-content-between">
         <Search
@@ -268,16 +279,26 @@ function Bookings() {
         />
 
         {/* konfigurasi produksi harian */}
-        <form className="d-flex " onSubmit={handleSubmit}>
-          <input
-            placeholder={dailyProduction}
-            type="number"
-            onChange={(e) => setDailyProduction(e.target.value)}
-          />
-          <button type="submit" className="primary-btn ms-3">
-            Simpan
-          </button>
-        </form>
+        <div className="d-flex" style={{ maxWidth: '450px' }}>
+          <p className="text-gray-2 text-sm">
+            Sesuaikan dengan produksi baglog harian !!
+          </p>
+          <form className="d-flex " onSubmit={handleSubmit}>
+            <input
+              placeholder={dailyProduction}
+              type="number"
+              onChange={(e) => setDailyProduction(e.target.value)}
+              className="w-2"
+            />
+            <button
+              type="submit"
+              disabled={dailyProduction === 0}
+              className="primary-btn ms-1"
+            >
+              Simpan
+            </button>
+          </form>
+        </div>
       </div>
 
       {/* body */}
@@ -392,9 +413,9 @@ function Bookings() {
                   <div>Alamat Pengiriman</div>
                 </div>
                 <div>
-                  <p>Wahyu Triyanto</p>
-                  <p>(+62) 81123456789</p>
-                  <p>Jl Asia Afrika No 123 Kota Bandung 40526</p>
+                  <p>{selectedBooking.user.name}</p>
+                  <p>(+62) {selectedBooking.user.no_phone}</p>
+                  <p>{selectedBooking.user.address}</p>
                 </div>
                 <div className="d-flex gap-3 align-items-center">
                   <img src={ico} alt="ico" width={30} height={30} />
@@ -406,7 +427,7 @@ function Bookings() {
                     <div className="ms-3">{selectedBooking.name}</div>
                   </div>
                   <p className="">
-                    X <span>1000</span>
+                    X <span>{selectedBooking.totalOrder}</span>
                   </p>
                 </div>
                 <hr />
@@ -420,14 +441,14 @@ function Bookings() {
                   <div className="d-flex justify-content-between pb-2">
                     <div>Harga /pcs</div>
                     <div>
-                      Rp <span>2.000</span>
+                      Rp <span>{selectedBooking.price}</span>
                     </div>
                   </div>
                   <hr />
                   <div className="d-flex justify-content-between font-semibold  mt-2">
                     <div>Subtotal</div>
                     <div>
-                      Rp <span>2.000.000</span>
+                      <span>{formattedPrice(selectedBooking.totalPrice)}</span>
                     </div>
                   </div>
                 </div>

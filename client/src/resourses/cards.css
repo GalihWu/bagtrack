@@ -38,5 +38,19 @@
   justify-content: center;
   align-items: center;
   background-color: #ff8300;
+  font-weight: 500;
   color: white;
+}
+.numbering-own {
+  position: absolute;
+  top: 15px;
+  left: 0px;
+  width: 40px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: brown;
+  color: white;
+  font-weight: 500;
 }

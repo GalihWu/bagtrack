@@ -132,7 +132,7 @@ function MyOrder() {
 
   return (
     <div>
-      <PageTitle title="My Order" />
+      <PageTitle title="Pesanan Saya" />
 
       <div className="table-parent">
         <table className="table">

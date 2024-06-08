@@ -8,7 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Loader from './components/Loader';
 import { useSelector } from 'react-redux';
 
-import Home from './pages/Home';
+// import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
@@ -32,16 +32,16 @@ function App() {
       {loading && <Loader />}
       <BrowserRouter>
         <Routes>
-          <Route
+          {/* <Route
             path="/"
             element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route
-            path="/book-now/:id"
+            path="/"
             element={
               <ProtectedRoute>
                 <BookNow />

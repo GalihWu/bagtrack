@@ -1,3 +1,8 @@
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 /* heights and widths */
 
 .h-screen {
@@ -88,7 +93,10 @@ select {
   box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
   transform: translateY(0);
 }
-
+.primary-btn:disabled {
+  cursor: not-allowed; /* Ganti kursor menjadi "not-allowed" */
+  opacity: 0.5; /* Kurangi opacity untuk memberi kesan tidak aktif */
+}
 .secondary-btn {
   background-color: var(--secondary) !important;
   color: white;
@@ -247,4 +255,8 @@ p {
 /*  */
 .pointer {
   cursor: pointer;
+}
+
+tr:nth-child(even) {
+  background-color: #ffeada4f;
 }

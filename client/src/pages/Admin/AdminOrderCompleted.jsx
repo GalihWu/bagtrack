@@ -94,7 +94,7 @@ function OrderCompleted() {
 
   return (
     <div className="container-bookings">
-      <PageTitle title="Bookings" />
+      <PageTitle title="Pesanan Selesai" />
       {/* search */}
       <Search
         placeholder={'Cari nama pengguna'}

@@ -71,9 +71,9 @@ function DefaultLayout({ children }) {
   ];
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
   let activeRoute = window.location.pathname;
-  if (window.location.pathname.includes('book-now')) {
-    activeRoute = '/';
-  }
+  // if (window.location.pathname.includes('book-now')) {
+  //   activeRoute = '/';
+  // }
 
   return (
     <div className="layout-parent">
@@ -111,7 +111,7 @@ function DefaultLayout({ children }) {
             );
           })}
         </div>
-        <a href="https://wa.link/5eurxz" className="chat">
+        <a href="https://wa.link/5eurxz" target="_blank" className="chat">
           <FaWhatsapp size={30} color="white" />
         </a>
         <div className="bottom">

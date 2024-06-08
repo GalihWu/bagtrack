@@ -99,7 +99,7 @@ function AdminUsers() {
   }, []);
   return (
     <div>
-      <PageTitle title="Users" />
+      <PageTitle title="Pelanggan" />
 
       <Search
         placeholder={'Cari nama pengguna'}

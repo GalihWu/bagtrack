@@ -6,15 +6,36 @@ import { HideLoading, ShowLoading } from '../redux/alertsSlice';
 
 import PageTitle from '../components/PageTitle';
 import profile from '../assets/profile2.jpg';
+import '../resourses/cards.css';
 // import Search from '../components/Search';
 
 function Bookings() {
   const [bookings, setBookings] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const [users, setUsers] = useState({});
   const dispatch = useDispatch();
+  // const [searchText, setSearchText] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(15);
+
+  const getUser = async () => {
+    try {
+      dispatch(ShowLoading());
+      const response = await axiosInstance.post(
+        '/api/users/get-user-by-id',
+        {}
+      );
+      dispatch(HideLoading());
+      if (response.data.success) {
+        setUsers(response.data.data);
+      } else {
+        message.error(response.data.message);
+      }
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
 
   const getBookings = async () => {
     try {
@@ -43,9 +64,9 @@ function Bookings() {
   };
 
   // Handle Search
-  const handleSearch = (event) => {
-    setSearchText(event.target.value);
-  };
+  // const handleSearch = (event) => {
+  //   setSearchText(event.target.value);
+  // };
 
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
@@ -53,7 +74,7 @@ function Bookings() {
   const filteredBookings = bookings
     .filter(
       (booking) =>
-        booking.user.name.toLowerCase().includes(searchText.toLowerCase()) &&
+        // booking.user.name.toLowerCase().includes(searchText.toLowerCase()) &&
         booking.user.isApproved
     )
     .filter((booking) => booking.status !== 'Selesai');
@@ -67,11 +88,12 @@ function Bookings() {
 
   useEffect(() => {
     getBookings();
+    getUser();
   }, []);
 
   return (
     <div>
-      <PageTitle title="Bookings" />
+      <PageTitle title="Antrean" />
       {/* <Search
         placeholder={'Cari nama pengguna'}
         value={searchText}
@@ -84,7 +106,11 @@ function Bookings() {
         {paginatedData &&
           paginatedData.map((item, i) => (
             <div key={i} className="card-bookings position-relative">
-              <p className="numbering">
+              <p
+                className={
+                  item.user._id === users._id ? `numbering-own` : `numbering`
+                }
+              >
                 {i + 1 + (currentPage - 1) * dataPerPage}
               </p>
               <img

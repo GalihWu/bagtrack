@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, message } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
@@ -12,6 +12,7 @@ import ico from '../assets/ico.png';
 function Login() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [form] = Form.useForm();
 
   const onFinish = async (values) => {
     try {
@@ -31,38 +32,72 @@ function Login() {
     }
   };
 
+  const onFinishFailed = (errorInfo) => {
+    message.error('Please fill in all required fields.');
+    form.scrollToField(errorInfo.errorFields[0].name);
+  };
+
   return (
     <div className="h-screen d-flex justify-content-center align-items-center auth">
-      <div className="w-400 box p-4 pt-5">
+      <div className="box p-4 pt-5">
         <div className="d-flex gap-2 justify-content-center align-items-center">
-          <img alt="ico" src={ico} width={42} height={42} />
+          <img src={ico} width={42} height={42} alt="ico" />
           <h1 className="text-lg fw-bold">Bagtrack</h1>
         </div>
         <hr />
         <Form
           layout="vertical"
-          className="d-flex flex-column gap-3"
+          className="d-flex flex-column"
+          form={form}
           onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
         >
-          <Form.Item label="Email*" name="email">
-            <input className="rounded" type="text" />
-          </Form.Item>
-          <Form.Item label="Password*" name="password">
-            <input className="rounded" type="password" />
-          </Form.Item>
-          <div className="d-flex justify-content-between align-items-center my-3">
-            <p className="text-p3">
-              Don`t have an account yet?{' '}
-              <Link
-                className="cursor-pointer font-semibold link"
-                to="/register"
-              >
-                Register
-              </Link>
-            </p>
-            <button className="button5" type="submit">
-              Login
-            </button>
+          <div className="d-flex flex-column gap-3">
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter your email.',
+                },
+                {
+                  type: 'email',
+                  message: 'Please enter a valid email.',
+                },
+              ]}
+            >
+              <Input className="rounded" type="text" />
+            </Form.Item>
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please enter your password.',
+                },
+                {
+                  min: 6,
+                  message: 'Password must be at least 6 characters.',
+                },
+              ]}
+            >
+              <Input.Password className="rounded" type="password" />
+            </Form.Item>
+          </div>
+          <div className="d-flex flex-column gap-3" style={{ width: '320px' }}>
+            <div className="d-flex justify-content-between align-items-center my-3">
+              <p className="text-p3">
+                Don`t have an account yet?{' '}
+                <Link className="cursor-pointer link" to="/register">
+                  Register
+                </Link>
+              </p>
+              <Button className="button5" type="primary" htmlType="submit">
+                Login
+              </Button>
+            </div>
           </div>
         </Form>
       </div>

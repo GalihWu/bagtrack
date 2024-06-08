@@ -60,6 +60,7 @@ function AdminHome() {
   };
 
   const totalOrders = bookings
+    .filter((booking) => booking.status !== 'Selesai')
     .reduce((acc, current) => acc + current.totalOrder, 0)
     .toLocaleString('id-ID');
 
@@ -67,6 +68,8 @@ function AdminHome() {
     .filter((booking) => booking.status === 'Selesai')
     .reduce((acc, current) => acc + current.totalPrice, 0)
     .toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+
+  const totalSubs = users.filter((user) => user.isAdmin === false).length;
 
   useEffect(() => {
     getUsers();
@@ -81,7 +84,7 @@ function AdminHome() {
         <Widget
           totalIncome={totalIncome}
           totalOrders={totalOrders}
-          users={users.length}
+          users={totalSubs}
         />
       </div>
       <div className="">

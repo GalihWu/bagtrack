@@ -1,7 +1,7 @@
 import { Col, message, Modal, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../resourses/booknow.css';
 import { axiosInstance } from '../helpers/axiosInstance';
 import { HideLoading, ShowLoading } from '../redux/alertsSlice';
@@ -16,6 +16,7 @@ import PageTitle from '../components/PageTitle';
 const { confirm } = Modal;
 
 function BookNow() {
+  const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [baglog, setBaglog] = useState(null);
@@ -29,7 +30,7 @@ function BookNow() {
       const response = await axiosInstance.post(
         '/api/baglogs/get-baglog-by-id',
         {
-          _id: '663ad95cb2e943260c6bb067',
+          _id: params.id,
         }
       );
       dispatch(HideLoading());

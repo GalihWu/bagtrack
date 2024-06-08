@@ -35,7 +35,7 @@ const MonthlyIncomeChart = (bookings) => {
     dataLabels: {
       enabled: true,
       formatter: function (val) {
-        return `${val} Juta`;
+        return val ? `${val} Juta` : '';
       },
       offsetY: -20,
       style: {
@@ -74,7 +74,7 @@ const MonthlyIncomeChart = (bookings) => {
       labels: {
         show: false,
         formatter: function (val) {
-          return `${val} Juta`;
+          return val ? `${val} Juta` : 0;
         },
       },
     },
