@@ -28,5 +28,8 @@
     "nodemon": "^2.0.19",
     "stripe": "^10.8.0",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

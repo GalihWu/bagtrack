@@ -139,47 +139,6 @@ function Bookings() {
     }
   };
 
-  // Algoritma CPM
-  const calculateCPM = (orderQuantity) => {
-    const activities = [
-      { name: 'A', duration: 1, prerequisites: [] },
-      { name: 'B', duration: 2, prerequisites: ['A'] },
-      { name: 'C', duration: 2, prerequisites: ['B'] },
-      { name: 'D', duration: 2, prerequisites: ['C'] },
-      { name: 'E', duration: 1, prerequisites: ['D'] },
-      { name: 'F', duration: 2, prerequisites: ['E'] },
-      { name: 'G', duration: [7, 12], prerequisites: ['F'] },
-      { name: 'H', duration: 1, prerequisites: ['G'] },
-    ];
-
-    const totalOrderMultiplier = Math.ceil(orderQuantity / dailyProduction);
-
-    let totalDurationMin = 0;
-    let totalDurationMax = 0;
-
-    activities.forEach((activity) => {
-      if (activity.name === 'G') {
-        totalDurationMin += activity.duration[0];
-        totalDurationMax += activity.duration[1];
-      } else {
-        totalDurationMin += activity.duration;
-        totalDurationMax += activity.duration;
-      }
-    });
-
-    totalDurationMin += (totalOrderMultiplier - 1) * 4;
-    totalDurationMax += (totalOrderMultiplier - 1) * 4;
-
-    return {
-      estimationMin: moment()
-        .add(totalDurationMin, 'days')
-        .format('YYYY-MM-DD'),
-      estimationMax: moment()
-        .add(totalDurationMax, 'days')
-        .format('YYYY-MM-DD'),
-    };
-  };
-
   // Mengubah status dan menambahkan estimasi waktu yang dinamis
   const handleChangeStatus = async (record) => {
     confirm({
@@ -190,10 +149,20 @@ function Bookings() {
       onOk: async () => {
         try {
           dispatch(ShowLoading());
-
-          const { estimationMin, estimationMax } = calculateCPM(
-            record.totalOrder
+          let estimationMin, estimationMax;
+          const baseDaysMin = 15; // Estimasi waktu dasar minimum dalam hari
+          const baseDaysMax = 20; // Estimasi waktu dasar maksimum dalam hari
+          const orderMultiplier = Math.ceil(
+            record.totalOrder / dailyProduction
           );
+
+          // Menghitung estimasi waktu minimum dan maksimum
+          estimationMin = moment()
+            .add(baseDaysMin + (orderMultiplier - 1) * 4, 'days')
+            .format('YYYY-MM-DD');
+          estimationMax = moment()
+            .add(baseDaysMax + (orderMultiplier - 1) * 4, 'days')
+            .format('YYYY-MM-DD');
 
           const response = await axiosInstance.post(
             '/api/bookings/update-booking',
@@ -230,7 +199,6 @@ function Bookings() {
       },
     });
   };
-
   // handle status selesai
   const handleStatusDone = async (record) => {
     confirm({
