@@ -158,10 +158,10 @@ function MyOrder() {
                   {moment(item.createdAt).format('DD-MM-YYYY')}
                 </td>
                 <td className="p-table">
-                  {item.estimationMin &&
+                  {/* {item.estimationMin &&
                     `${moment(item.estimationMin).format(
                       'DD-MM-YYYY'
-                    )} sampai `}
+                    )} sampai `} */}
                   {item.estimationMax &&
                     moment(item.estimationMax).format('DD-MM-YYYY')}
                 </td>

@@ -5,6 +5,8 @@ import { useDispatch } from 'react-redux';
 import { axiosInstance } from '../../helpers/axiosInstance';
 import { HideLoading, ShowLoading } from '../../redux/alertsSlice';
 import { useReactToPrint } from 'react-to-print';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 // ico
 import { GrFormNextLink, GrLocation } from 'react-icons/gr';
@@ -148,7 +150,7 @@ function Bookings() {
       { name: 'D', duration: 2, prerequisites: ['C'] },
       { name: 'E', duration: 1, prerequisites: ['D'] },
       { name: 'F', duration: 2, prerequisites: ['E'] },
-      { name: 'G', duration: [7, 12], prerequisites: ['F'] },
+      { name: 'G', duration: [7, 10], prerequisites: ['F'] },
       { name: 'H', duration: 1, prerequisites: ['G'] },
     ];
 
@@ -292,6 +294,45 @@ function Bookings() {
     indexOfLastData
   );
 
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF('l', 'mm', [297, 210]);
+    doc.setFontSize(12);
+
+    const tableData = filteredBookings.map((booking, i) => {
+      return [
+        i + 1, // Angka urut
+        booking.user.name,
+        booking.totalOrder,
+        formattedPrice(booking.totalPrice),
+        booking.status,
+        booking.estimationMax
+          ? moment(booking.estimationMax).format('DD-MM-YYYY')
+          : '',
+      ];
+    });
+
+    doc.autoTable({
+      head: [
+        [
+          'No',
+          'Nama Pengguna',
+          'Jumlah Pesanan',
+          'Total Tagihan',
+          'Status',
+          'Estimasi Waktu',
+        ],
+      ],
+      body: tableData,
+      theme: 'grid',
+      styles: {
+        fontSize: 12,
+        cellPadding: 2,
+      },
+    });
+
+    doc.save('daftar_pemesanan.pdf');
+  };
+
   useEffect(() => {
     getBookings();
     getBaglog();
@@ -357,10 +398,6 @@ function Bookings() {
                 <td className="p-table">{formattedPrice(item.totalPrice)}</td>
                 <td className="p-table">{item.status}</td>
                 <td className="p-table">
-                  {item.estimationMin &&
-                    `${moment(item.estimationMin).format(
-                      'DD-MM-YYYY'
-                    )} sampai `}
                   {item.estimationMax &&
                     moment(item.estimationMax).format('DD-MM-YYYY')}
                 </td>
@@ -489,6 +526,9 @@ function Bookings() {
           </div>
         </Modal>
       )}
+      <div className="button5" onClick={handleDownloadPDF}>
+        Download Daftar Pemesanan (PDF)
+      </div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 // component
 import produk from '../assets/produk.jpg';
 import PageTitle from '../components/PageTitle';
+import { RiErrorWarningLine } from 'react-icons/ri';
 
 const { confirm } = Modal;
 
@@ -21,6 +22,7 @@ function BookNow() {
   const [baglog, setBaglog] = useState(null);
   const [quantity, setQuantity] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Get baglog
   const getBaglog = async () => {
@@ -113,6 +115,15 @@ function BookNow() {
   };
 
   const harga = formatRupiah(subtotal);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <div>
       <PageTitle title={'Pesan Baglog'} />
@@ -134,7 +145,14 @@ function BookNow() {
 
                 {/* atur pesanan */}
                 <div className="bottom-right-booknow">
-                  <h2 className="text-lg mb-4">Atur Jumlah Pesanan</h2>
+                  <h2 className="text-lg mb-2">Atur Jumlah Pesanan</h2>
+                  <div className="text-end mb-2">
+                    <RiErrorWarningLine
+                      className="icons"
+                      style={{ color: 'yellowgreen' }}
+                      onClick={showModal}
+                    />
+                  </div>
                   <div className="d-flex gap-3 mb-4 justify-content-between">
                     <div className="text-gray-2 ps-4">
                       <p className="text-sm">Pemesanan kelipatan 1000 pcs</p>
@@ -159,7 +177,7 @@ function BookNow() {
                   </div>
 
                   {/* subtotal */}
-                  <div className="ms-4 font-semibold mt-4 py-3 border-bottom border-2 d-flex justify-content-between">
+                  <div className="ms-4 font-semibold py-3 border-bottom border-2 d-flex justify-content-between">
                     <p>Subtotal</p>
                     <div className="d-flex gap-2">
                       <div className="text-h6 font-medium">{harga}</div>
@@ -224,6 +242,31 @@ function BookNow() {
           </Col>
         </Row>
       )}
+
+      <Modal
+        title="Baca Ketentuan sebelum melakukan Pemesanan"
+        visible={isModalVisible}
+        onOk={handleOk}
+        footer={[
+          <button key="ok" onClick={handleOk} className="button5">
+            OK
+          </button>,
+        ]}
+        width={700}
+      >
+        <ul>
+          <li>Pemesanan dilakukan secara online melalui situs web.</li>
+          <li>
+            Jumlah pesanan baglog dapat dimulai dari 1.000 baglog hingga 10.000
+            baglog, dengan kelipatan 1.000.
+          </li>
+          <li>Pembayaran dapat dilakukan setelah baglog mulai dikirimkan.</li>
+          <li>
+            Pesanan hanya dapat dibatalkan jika status pemesanan masih dalam
+            antrean atau belum diproses.
+          </li>
+        </ul>
+      </Modal>
     </div>
   );
 }
